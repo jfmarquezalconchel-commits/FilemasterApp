@@ -1,0 +1,252 @@
+package com.filemasterapp.FilemasterApp.dto;
+
+import com.filemasterapp.FilemasterApp.Model.FileSystem;
+import java.time.LocalDateTime;
+import com.filemasterapp.FilemasterApp.Utils.Utils;
+
+/**
+ * DTO (Data Transfer Object) para representar un archivo o directorio en el sistema.
+ * <p>
+ * Contiene la información de salida para transferir datos entre capas del sistema,
+ * incluyendo identificador, ruta, nombre, tamaño, tipo y metadatos.
+ * </p>
+ */
+public class FileOutDTO {
+
+    /**
+     * Identificador único del archivo o directorio.
+     */
+    private Long id;
+
+    /**
+     * Ruta del archivo o directorio.
+     */
+    private String path;
+
+    /**
+     * Nombre del archivo o directorio.
+     */
+    private String filename;
+
+    /**
+     * Tamaño del archivo en bytes.
+     */
+    private Long size;
+
+    /**
+     * Indica si es un directorio (true) o archivo (false).
+     */
+    private Boolean is_dir;
+
+    /**
+     * Sistema de archivos al que pertenece.
+     */
+    private FileSystem fileSystem;
+
+    /**
+     * Hash MD5 del archivo (solo para archivos, null para directorios).
+     */
+    private String md5;
+
+    /**
+     * Fecha y hora de la última modificación.
+     */
+    private LocalDateTime lastUpdate;
+
+    /**
+     * Fecha y hora de eliminación (null si no ha sido eliminado).
+     */
+    private LocalDateTime deletedAt;
+
+    /**
+     * Obtiene el hash MD5 del archivo.
+     *
+     * @return el hash MD5, o null si no está disponible
+     */
+    public String getMd5() {
+        return this.md5;
+    }
+
+    /**
+     * Obtiene la fecha y hora de la última modificación.
+     *
+     * @return la fecha y hora de última modificación
+     */
+    public LocalDateTime getLastUpdate() {
+        return lastUpdate;
+    }
+
+    /**
+     * Establece la fecha y hora de la última modificación.
+     *
+     * @param lastUpdate la fecha y hora a establecer
+     */
+    public void setLastUpdate(LocalDateTime lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    /**
+     * Obtiene la fecha y hora de eliminación.
+     *
+     * @return la fecha y hora de eliminación, o null si no ha sido eliminado
+     */
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    /**
+     * Establece la fecha y hora de eliminación.
+     *
+     * @param deletedAt la fecha y hora a establecer
+     */
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    /**
+     * Constructor que inicializa el DTO con todos los campos.
+     * <p>
+     * Calcula automáticamente el hash MD5 basado en la combinación
+     * del ID del sistema de archivos, ruta y nombre del archivo.
+     * </p>
+     *
+     * @param id el identificador único
+     * @param fileSystem el sistema de archivos al que pertenece
+     * @param path la ruta del archivo o directorio
+     * @param filename el nombre del archivo o directorio
+     * @param size el tamaño en bytes
+     * @param is_dir indica si es un directorio
+     * @param lastUpdate la fecha y hora de última modificación
+     * @param deletedAt la fecha y hora de eliminación
+     */
+    FileOutDTO(Long id, FileSystem fileSystem, String path, String filename, Long size, Boolean is_dir, LocalDateTime lastUpdate, LocalDateTime deletedAt) {
+        this.id = id;
+        this.fileSystem = fileSystem;
+        this.path = path;
+        this.filename = filename;
+        this.size = size;
+        this.is_dir = is_dir;
+        this.lastUpdate = lastUpdate;
+        this.deletedAt = deletedAt;
+        this.md5 = Utils.md5(fileSystem.getId() + "|" + path + "|" + filename);
+    }
+
+    /**
+     * Obtiene el sistema de archivos al que pertenece.
+     *
+     * @return el sistema de archivos
+     */
+    public FileSystem getFileSystem() {
+        return fileSystem;
+    }
+
+    /**
+     * Establece el sistema de archivos al que pertenece.
+     *
+     * @param fileSystem el sistema de archivos a establecer
+     */
+    public void setFileSystem(FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
+    }
+
+    /**
+     * Obtiene el identificador único del archivo o directorio.
+     *
+     * @return el identificador
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Establece el identificador único del archivo o directorio.
+     *
+     * @param id el identificador a establecer
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Obtiene la ruta del archivo o directorio.
+     *
+     * @return la ruta
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Establece la ruta del archivo o directorio.
+     *
+     * @param path la ruta a establecer
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    /**
+     * Obtiene el nombre del archivo o directorio.
+     *
+     * @return el nombre
+     */
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
+     * Establece el nombre del archivo o directorio.
+     *
+     * @param filename el nombre a establecer
+     */
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    /**
+     * Obtiene el tamaño del archivo en bytes.
+     *
+     * @return el tamaño en bytes
+     */
+    public Long getSize() {
+        return size;
+    }
+
+    /**
+     * Establece el tamaño del archivo en bytes.
+     *
+     * @param size el tamaño a establecer
+     */
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    /**
+     * Indica si es un directorio.
+     *
+     * @return true si es un directorio, false si es un archivo
+     */
+    public Boolean getIs_dir() {
+        return is_dir;
+    }
+
+    /**
+     * Establece si es un directorio.
+     *
+     * @param is_dir true si es un directorio, false si es un archivo
+     */
+    public void setIs_dir(Boolean is_dir) {
+        this.is_dir = is_dir;
+    }
+
+    /**
+     * Devuelve una representación en cadena del objeto.
+     * Formato: id|path|filename|size|is_dir|lastUpdate|deletedAt
+     *
+     * @return cadena con la información del archivo/directorio
+     */
+    @Override
+    public String toString() {
+        return this.id + "|" + this.path + "|" + this.filename + "|" + this.size + "|" + this.is_dir + "|" + this.lastUpdate + "|" + this.deletedAt;
+    }
+}
