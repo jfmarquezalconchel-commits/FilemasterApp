@@ -119,7 +119,7 @@ public class FileOutDTO {
      * @param lastUpdate la fecha y hora de última modificación
      * @param deletedAt la fecha y hora de eliminación
      */
-    FileOutDTO(Long id, FileSystem fileSystem, String path, String filename, Long size, Boolean is_dir, LocalDateTime lastUpdate, LocalDateTime deletedAt) {
+    public FileOutDTO(Long id, FileSystem fileSystem, String path, String filename, Long size, Boolean is_dir, LocalDateTime lastUpdate, LocalDateTime deletedAt) {
         this.id = id;
         this.fileSystem = fileSystem;
         this.path = path;

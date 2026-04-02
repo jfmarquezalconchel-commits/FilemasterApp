@@ -112,7 +112,7 @@ public class FileSystemOutDTO {
      * @param inuse espacio utilizado en bytes
      * @param parent sistema de archivos padre (opcional)
      */
-    FileSystemOutDTO(Long id, String target, String source, String fstype, String options, Long capacity, Long available, Long inuse, FileSystem parent) {
+    public FileSystemOutDTO(Long id, String target, String source, String fstype, String options, Long capacity, Long available, Long inuse, FileSystem parent) {
         this.id = id;
         this.fstype = fstype;
         this.target = target;
