@@ -257,4 +257,21 @@ public class FileSystem implements Serializable {
         this.setInuse(fs.getInuse());
         this.setLastUpdate(fs.getLastUpdate());
     }
+
+    public FileSystemOutDTO getOutDTO() {
+        FileSystemOutDTO out = new FileSystemOutDTO();
+        out.setFstype(this.getFstype());
+        out.setTarget(this.getTarget());
+        out.setSource(this.getSource());
+        out.setAvailable(this.getAvailable());
+        out.setInuse(this.getInuse());
+        out.setLastUpdate(this.getLastUpdate());
+        out.setUuid(this.getUuid());
+        out.setPartuuid(this.getPartuuid());
+        out.setPartlabel(this.getPartlabel());
+        out.setPartuuid(this.getPartuuid());
+        out.setPartlabel(this.getPartlabel());
+        return out;
+    }
+
 }

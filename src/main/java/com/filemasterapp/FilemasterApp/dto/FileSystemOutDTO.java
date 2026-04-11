@@ -124,6 +124,8 @@ public class FileSystemOutDTO {
         this.parent = parent;
     }
 
+    public FileSystemOutDTO() {}
+
     /**
      * Obtiene el sistema de archivos padre.
      *

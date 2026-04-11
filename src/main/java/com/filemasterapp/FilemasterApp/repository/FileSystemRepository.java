@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FileSystemRepository extends JpaRepository<FileSystem, Long> {
     List<FileSystem> getFileSystemById(Long id);
+    List<FileSystem> findFileSystemsByAvailable(Boolean available);
 }

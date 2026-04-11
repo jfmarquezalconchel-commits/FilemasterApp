@@ -24,4 +24,8 @@ public class FileService {
         return new FileOutDTO(file.getId(),file.getFileSystem(),file.getPath(),file.getFilename(),file.getSize(),file.getIs_dir(),file.getLastUpdate(),file.getDeletedAt());
     }
 
+   /* public String getFileSystemTree(Long id){
+        return this.filesRepository.
+    }*/
+
 }

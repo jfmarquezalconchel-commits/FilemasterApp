@@ -131,6 +131,8 @@ public class FileOutDTO {
         this.md5 = Utils.md5(fileSystem.getId() + "|" + path + "|" + filename);
     }
 
+    public FileOutDTO() { }
+
     /**
      * Obtiene el sistema de archivos al que pertenece.
      *
