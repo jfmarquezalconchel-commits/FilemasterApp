@@ -12,6 +12,7 @@ import jakarta.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 
+
 import java.util.*;
 
 @Service
@@ -31,9 +32,37 @@ public class FileTree {
         this.repository = repository;
   }
 
-    public String getTree(Long id) {
+    public Nodo getTree(Long id) {
 
-        return this.tree.get(id).toString();
+        if(tree.containsKey(id)){
+            //return this.viewTree(tree.get(id)).toString();
+            return tree.get(id);
+        }
+        return null;
+    }
+
+    public Nodo getTreePath(Long id,String path){
+        if(tree.containsKey(id)){
+            return tree.get(id).findPath(path);
+        }
+        return null;
+    }
+
+    private String viewTree(Nodo raiz){
+        StringBuilder sb = new StringBuilder();
+        sb.append("|-"+raiz.getPath());
+
+        for(FileOutDTO f:raiz.getFilesInfo()){
+            if(f!=null && !f.getIs_dir()){
+                sb.append("|->"+f.getFilename());
+            }
+
+        }
+        for(Nodo child:raiz.getHijos().values()){
+            sb.append("|-"+viewTree(child));
+        }
+
+        return sb.toString();
     }
 
 
@@ -50,16 +79,18 @@ public class FileTree {
                     if(afs.getId()!=3) continue;
                     this.fileSystems.put(afs.getId(), afs);
                     FileService fileServiceRepo = new FileService(this.repository);
-                    Nodo node = null;
-                    if(this.tree.containsKey(afs.getId())){
-                        node= this.tree.get(afs.getId());
-                    }else{
-                        node = new Nodo("/",null,null);
-                        this.tree.put(afs.getId(),node);
-                    }
+                    Nodo node = new Nodo("/",null);
+
+                    Integer counter=10000;
                     for(FileOutDTO fout:fileServiceRepo.getFilesByFileSystem(afs.getId())){
                        this.addFile(node,fout.getPath(),fout);
+                       counter--;
+                       if(counter==0){
+                           break;
+                       }
                     }
+
+                    this.tree.put(afs.getId(),node);
                 }
             }
         }catch(Exception e){
@@ -70,11 +101,11 @@ public class FileTree {
     private Nodo findNode(String path,Nodo nodeToFind){
         String[] partes = path.split("/");
         Nodo retorno=null;
-        if(partes.length>0){
+        if(partes.length>1){
             retorno=nodeToFind;
-            if(partes[0].equals(nodeToFind.getPath())){
+            if(partes[1].equals(nodeToFind.getPath())){
                 partes = Arrays.copyOfRange(partes, 1, partes.length);
-                if(partes.length>1){
+                if(partes.length>2){
                     if(nodeToFind.getHijos().containsKey(partes[0])){
                         retorno=this.findNode(String.join("/",partes),nodeToFind.getHijos().get(partes[0]));
                     }
@@ -86,88 +117,21 @@ public class FileTree {
 
     private Nodo addFile(Nodo raiz, String path,FileOutDTO file) {
 
-        Nodo ref=raiz;
-        Long bytes = raiz.getNodeSize();
-        System.out.println(path);
-
         String[] partes = path.split("/");
+        System.out.println(path+"/"+file.getFilename());
 
-        if(partes.length>0){
-            if(raiz.getPath().equals(partes[0])) {
-                raiz.setNodeSize(raiz.getNodeSize() + file.getSize());
-                partes = Arrays.copyOfRange(partes, 1, partes.length);
-                if(partes.length>1){
-                    String nuevoPath = String.join("/",partes);
-                    if(!raiz.getHijos().containsKey(partes[0])){
-                        raiz.addHijo(partes[0],raiz,null);
-                    }
-                    ref=addFile(raiz.getHijos().get(partes[0]),nuevoPath,file);
-                }
-            }
-        }else{
-            raiz.setFileInfo(file);
+        for(int i=1;i<partes.length;i++){
+             raiz.setNodeSize(raiz.getNodeSize() + file.getSize());
+             if(raiz.getHijos().containsKey(partes[i])){
+                 raiz=raiz.getHijos().get(partes[i]);
+             }else {
+                 raiz = raiz.addHijo(partes[i], null);
+             }
         }
-        return ref;
+        file.setFileSystem(null);
+        raiz.addFileInfo(file);
+        return raiz;
     }
 
 }
 
-class Nodo {
-
-    private  FileOutDTO fileInfo;
-    private  Map<String, Nodo> hijos = new HashMap<>();
-    private  Nodo padre;
-    private  String path;
-    private  Long nodeSize=0L;
-
-    public Nodo(String path, Nodo padre, FileOutDTO fileInfo) {
-        this.path = path;
-        this.padre = padre;
-        this.fileInfo = fileInfo;
-    }
-
-    public Map<String, Nodo> getHijos() {
-        return hijos;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public Nodo getPadre() {
-        return padre;
-    }
-
-    public FileOutDTO getFileInfo() {
-        return fileInfo;
-    }
-
-    public void setFileInfo(FileOutDTO fileInfo) {
-        this.fileInfo = fileInfo;
-    }
-
-    public void setHijos(Map<String, Nodo> hijos) {
-        this.hijos = hijos;
-    }
-
-    public void addHijo(String path, Nodo parent,FileOutDTO fileInfo) {
-        Nodo nuevo = new Nodo(path,parent,fileInfo);
-        this.hijos.put(path,nuevo);
-    }
-
-    public void setPadre(Nodo padre) {
-        this.padre = padre;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public Long getNodeSize() {
-        return nodeSize;
-    }
-
-    public void setNodeSize(Long nodeSize) {
-        this.nodeSize = nodeSize;
-    }
-}
