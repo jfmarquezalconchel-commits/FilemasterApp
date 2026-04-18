@@ -2,10 +2,9 @@ package com.filemasterapp.FilemasterApp.Services;
 
 import com.filemasterapp.FilemasterApp.dto.FileOutDTO;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Nodo {
 
@@ -20,21 +19,18 @@ public class Nodo {
     }
 
     public Nodo findPath(String path){
-        String[] partes = path.split("/");
-        Nodo  node = this;
-        System.out.println(path);
-
-        if(partes.length>1 && node.getPath().equals(partes[1])){
-            for(Nodo child : node.hijos.values()){
-                String[] partes2 = Arrays.copyOfRange(partes, 1, partes.length);
-                Nodo nf = child.findPath(partes2[1]);
-                if(nf!=null){
-                    return nf;
+        List<String> partes = Arrays.asList(path.split("/"));
+        if(partes.get(0).equals("")){
+            partes.set(0,"/");
+        }
+        if(partes.size()>0 && this.getPath().equals(partes.get(0))){
+            for(Nodo child : this.hijos.values()){
+                if(partes.size()>1 && partes.get(1).equals(child.getPath())){
+                    return child.findPath(partes.subList(1,partes.size()).stream().map(String::valueOf).collect(Collectors.joining("/")));
                 }
             }
         }
-
-        return node;
+        return this;
     }
 
     public Map<String, Nodo> getHijos() {

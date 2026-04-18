@@ -78,13 +78,26 @@ public class FileSystem implements Serializable {
         lastUpdate = LocalDateTime.now();
     }
 
+    public Set<FileSystem> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<FileSystem> children) {
+        this.children = children;
+    }
+
+    public void addChild(FileSystem child) {
+        if (children != null) {
+            children.add(child);
+        }
+    }
 
     @ManyToOne
     @JoinColumn(name = "parent_id", nullable = true)
     private FileSystem parent;
 
-    /*@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<FileSystem> children = new HashSet<FileSystem>();*/
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<FileSystem> children = new HashSet<FileSystem>();
 
     public void setBlkInfo(String uuid, String partuuid, String partlabel) {
         this.uuid = uuid;
@@ -257,21 +270,4 @@ public class FileSystem implements Serializable {
         this.setInuse(fs.getInuse());
         this.setLastUpdate(fs.getLastUpdate());
     }
-
-    public FileSystemOutDTO getOutDTO() {
-        FileSystemOutDTO out = new FileSystemOutDTO();
-        out.setFstype(this.getFstype());
-        out.setTarget(this.getTarget());
-        out.setSource(this.getSource());
-        out.setAvailable(this.getAvailable());
-        out.setInuse(this.getInuse());
-        out.setLastUpdate(this.getLastUpdate());
-        out.setUuid(this.getUuid());
-        out.setPartuuid(this.getPartuuid());
-        out.setPartlabel(this.getPartlabel());
-        out.setPartuuid(this.getPartuuid());
-        out.setPartlabel(this.getPartlabel());
-        return out;
-    }
-
 }

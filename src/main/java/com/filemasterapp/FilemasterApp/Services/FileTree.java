@@ -35,7 +35,6 @@ public class FileTree {
     public Nodo getTree(Long id) {
 
         if(tree.containsKey(id)){
-            //return this.viewTree(tree.get(id)).toString();
             return tree.get(id);
         }
         return null;
@@ -76,11 +75,12 @@ public class FileTree {
             if (this.fileSystems.isEmpty()) {
                 com.filemasterapp.FilemasterApp.Utils.FileSystem fs = new com.filemasterapp.FilemasterApp.Utils.FileSystem(this.entityManager.unwrap(Session.class));
                 for (FileSystem afs : fs.getFileSystemList()) {
-                    if(afs.getId()!=3) continue;
+                    //REMOVER AL FINAL
+                    if(afs.getId()!=19) continue;
                     this.fileSystems.put(afs.getId(), afs);
                     FileService fileServiceRepo = new FileService(this.repository);
                     Nodo node = new Nodo("/",null);
-
+                    //REMOVER CONTADOR AL FINAL.
                     Integer counter=10000;
                     for(FileOutDTO fout:fileServiceRepo.getFilesByFileSystem(afs.getId())){
                        this.addFile(node,fout.getPath(),fout);
@@ -102,11 +102,15 @@ public class FileTree {
         String[] partes = path.split("/");
         Nodo retorno=null;
         if(partes.length>1){
+            System.out.println("partes length");
             retorno=nodeToFind;
             if(partes[1].equals(nodeToFind.getPath())){
+                System.out.println("partes igualnodo");
                 partes = Arrays.copyOfRange(partes, 1, partes.length);
                 if(partes.length>2){
+                    System.out.println("partes >2");
                     if(nodeToFind.getHijos().containsKey(partes[0])){
+                        System.out.println("contiene key");
                         retorno=this.findNode(String.join("/",partes),nodeToFind.getHijos().get(partes[0]));
                     }
                 }
@@ -121,11 +125,13 @@ public class FileTree {
         System.out.println(path+"/"+file.getFilename());
 
         for(int i=1;i<partes.length;i++){
-             raiz.setNodeSize(raiz.getNodeSize() + file.getSize());
+
              if(raiz.getHijos().containsKey(partes[i])){
                  raiz=raiz.getHijos().get(partes[i]);
+                 raiz.setNodeSize(raiz.getNodeSize() + file.getSize());
              }else {
                  raiz = raiz.addHijo(partes[i], null);
+                 raiz.setNodeSize(raiz.getNodeSize() + file.getSize());
              }
         }
         file.setFileSystem(null);
